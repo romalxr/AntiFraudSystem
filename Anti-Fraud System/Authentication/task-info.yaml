@@ -491,6 +491,158 @@ files:
         };
     }
   learner_created: false
+- name: src/antifraud/entity/Validity.java
+  visible: true
+  text: |
+    package antifraud.entity;
+
+    public enum Validity {
+        PROHIBITED,
+        MANUAL_PROCESSING,
+        ALLOWED
+    }
+  learner_created: true
+- name: src/antifraud/dto/TransactionDTO.java
+  visible: true
+  text: |
+    package antifraud.dto;
+
+
+    import lombok.Data;
+
+    import javax.validation.constraints.Min;
+    import javax.validation.constraints.NotNull;
+
+    @Data
+    public class TransactionDTO {
+
+        @NotNull
+        @Min(value = 1)
+        private Long amount;
+    }
+  learner_created: true
+- name: src/antifraud/controller/TransactionController.java
+  visible: true
+  text: |
+    package antifraud.controller;
+
+    import antifraud.dto.TransactionDTO;
+    import antifraud.entity.Validity;
+    import antifraud.service.TransactionService;
+    import org.springframework.web.bind.annotation.PostMapping;
+    import org.springframework.web.bind.annotation.RequestBody;
+    import org.springframework.web.bind.annotation.RestController;
+
+    import java.util.Map;
+
+    @RestController
+    public class TransactionController {
+
+        private final TransactionService transactionService;
+
+        public TransactionController(TransactionService transactionService) {
+            this.transactionService = transactionService;
+        }
+
+        @PostMapping("api/antifraud/transaction")
+        public Object checkTransaction(@RequestBody TransactionDTO transaction) {
+            Validity result = transactionService.checkTransaction(transaction);
+            return Map.of("result", result);
+        }
+    }
+  learner_created: true
+- name: src/antifraud/handler/MyExceptionHandler.java
+  visible: true
+  text: |
+    package antifraud.handler;
+
+    import org.springframework.http.HttpStatus;
+    import org.springframework.web.bind.annotation.ControllerAdvice;
+    import org.springframework.web.bind.annotation.ExceptionHandler;
+
+    import javax.servlet.http.HttpServletResponse;
+    import javax.validation.ConstraintViolation;
+    import javax.validation.ConstraintViolationException;
+    import java.io.IOException;
+    import java.util.Set;
+
+    @ControllerAdvice
+    public class MyExceptionHandler {
+        @ExceptionHandler(ConstraintViolationException.class)
+        public void handleConstraintViolationException(ConstraintViolationException ex, HttpServletResponse response)
+                throws IOException {
+            Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
+            StringBuilder message = new StringBuilder();
+            for (ConstraintViolation violation : violations) {
+                message.append(violation.getMessage()).append(", ");
+            }
+            response.sendError(HttpStatus.BAD_REQUEST.value(), message.substring(0, message.length() - 2));
+        }
+    }
+  learner_created: true
+- name: src/antifraud/service/TransactionService.java
+  visible: true
+  text: |
+    package antifraud.service;
+
+    import antifraud.dto.TransactionDTO;
+    import antifraud.entity.Validity;
+    import org.springframework.stereotype.Service;
+    import org.springframework.validation.annotation.Validated;
+
+    import javax.validation.Valid;
+
+    @Service
+    @Validated
+    public class TransactionService {
+
+        public Validity checkTransaction(@Valid TransactionDTO transaction) {
+            if (transaction.getAmount() > 1500L) {
+                return Validity.PROHIBITED;
+            } else if (transaction.getAmount() > 200L) {
+                return Validity.MANUAL_PROCESSING;
+            } else {
+                return Validity.ALLOWED;
+            }
+        }
+    }
+  learner_created: true
+- name: src/antifraud/security/RestAuthenticationEntryPoint.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/entity/User.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/repository/UserRepository.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/security/UserDetailsImpl.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/security/UserDetailsServiceImpl.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/security/WebSecurityConfig.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/controller/UserController.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/dto/UserDTO.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/mapper/UserMapper.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/service/UserService.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/service/ValidateService.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/232/stages/1162/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Tue, 21 Feb 2023 04:47:23 UTC"
 record: -1
