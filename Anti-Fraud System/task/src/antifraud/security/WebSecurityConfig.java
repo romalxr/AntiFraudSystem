@@ -1,7 +1,9 @@
 package antifraud.security;
 
+import static antifraud.entity.Role.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,10 +29,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable().headers().frameOptions().disable() // for Postman, the H2 console
                 .and()
                 .authorizeRequests() // manage access
-                .antMatchers("/api/auth/list").authenticated()
-                .antMatchers("api/antifraud/transaction").authenticated()
-                .antMatchers("/api/auth/user").permitAll()
-                .antMatchers("/actuator/shutdown").permitAll() // needs to run test
+                .mvcMatchers("/actuator/shutdown")
+                    .permitAll() // needs to run test
+                .mvcMatchers(HttpMethod.POST,"/api/auth/user")
+                    .permitAll()
+                .mvcMatchers("/api/auth/list")
+                    .hasAnyAuthority(ADMINISTRATOR.name(), SUPPORT.name())
+                .mvcMatchers("/api/antifraud/transaction")
+                    .hasAuthority(MERCHANT.name())
+                .mvcMatchers("/api/auth/**")
+                    .hasAuthority(ADMINISTRATOR.name())
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS); // no session

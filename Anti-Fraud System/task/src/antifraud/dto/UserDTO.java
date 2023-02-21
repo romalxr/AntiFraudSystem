@@ -1,5 +1,6 @@
 package antifraud.dto;
 
+import antifraud.entity.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,4 +23,6 @@ public class UserDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank
     private String password;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Role role;
 }

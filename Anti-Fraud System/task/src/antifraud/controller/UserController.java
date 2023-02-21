@@ -1,5 +1,7 @@
 package antifraud.controller;
 
+import antifraud.dto.AccessDTO;
+import antifraud.dto.RoleDTO;
 import antifraud.dto.UserDTO;
 import antifraud.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,18 @@ public class UserController {
                 HttpStatus.CREATED);
     }
 
+    @PutMapping("/api/auth/access")
+    public Object changeAccess(@RequestBody AccessDTO access) {
+        userService.changeAccess(access);
+        return Map.of("status", "User " + access.getUsername() +
+                " " + access.getOperation().toLowerCase() + "ed!");
+    }
+
+    @PutMapping("/api/auth/role")
+    public UserDTO changeAccess(@RequestBody RoleDTO role) {
+        return userService.changeRole(role);
+    }
+
     @DeleteMapping("/api/auth/user/{username}")
     public Object deleteUser(@PathVariable String username) {
         userService.deleteUser(username);
@@ -35,6 +49,6 @@ public class UserController {
 
     @GetMapping("/api/auth/list")
     public List<UserDTO> getUserList(){
-        return userService.getAll();
+        return userService.findAll();
     }
 }

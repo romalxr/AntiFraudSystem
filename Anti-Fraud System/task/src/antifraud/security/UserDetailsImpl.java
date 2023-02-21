@@ -12,10 +12,9 @@ public class UserDetailsImpl implements UserDetails {
     public UserDetailsImpl(User user) {
         this.user = user;
     }
-    public User getUser() { return user; }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return Collections.singleton(user.getRole());
     }
     @Override
     public String getPassword() { return user.getPassword(); }
@@ -38,6 +37,6 @@ public class UserDetailsImpl implements UserDetails {
     }
     @Override
     public boolean isEnabled() {
-        return true;
+        return user.isEnabled();
     }
 }
