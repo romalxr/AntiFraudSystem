@@ -15,7 +15,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class UserDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private int id;
+    private Long id;
     @NotBlank
     private String name;
     @NotBlank

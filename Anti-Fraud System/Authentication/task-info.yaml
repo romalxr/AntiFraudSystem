@@ -640,7 +640,7 @@ files:
 - name: src/antifraud/service/ValidateService.java
   visible: true
   learner_created: true
-feedback_link: https://hyperskill.org/projects/232/stages/1162/implement#comment
+feedback_link: https://hyperskill.org/learn/step/18068#comment
 status: Solved
 feedback:
   message: Congratulations!

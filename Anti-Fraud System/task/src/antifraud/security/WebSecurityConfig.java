@@ -39,6 +39,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .hasAuthority(MERCHANT.name())
                 .mvcMatchers("/api/auth/**")
                     .hasAuthority(ADMINISTRATOR.name())
+                .mvcMatchers("/api/antifraud/suspicious-ip/**")
+                    .hasAuthority(SUPPORT.name())
+                .mvcMatchers("/api/antifraud/stolencard/**")
+                    .hasAuthority(SUPPORT.name())
+                .mvcMatchers("/**").authenticated()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS); // no session
