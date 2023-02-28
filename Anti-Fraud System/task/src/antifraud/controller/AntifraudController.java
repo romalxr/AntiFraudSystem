@@ -1,5 +1,6 @@
 package antifraud.controller;
 
+import antifraud.dto.FeedbackDTO;
 import antifraud.dto.TransactionDTO;
 import antifraud.entity.BannedCard;
 import antifraud.entity.BannedIP;
@@ -18,9 +19,24 @@ public class AntifraudController {
         this.antifraudService = antifraudService;
     }
 
-    @PostMapping("api/antifraud/transaction")
-    public Object checkTransaction(@RequestBody TransactionDTO transaction) {
-        return antifraudService.checkTransaction(transaction);
+    @GetMapping("/api/antifraud/history")
+    public List<TransactionDTO> getTransactionHistory() {
+        return antifraudService.getTransactionHistory();
+    }
+
+    @GetMapping("/api/antifraud/history/{number}")
+    public List<TransactionDTO> getTransactionsByNumber(@PathVariable String number) {
+        return antifraudService.getTransactionsByNumber(number);
+    }
+
+    @PutMapping("/api/antifraud/transaction")
+    public TransactionDTO addFeedback(@RequestBody FeedbackDTO feedback) {
+        return antifraudService.addFeedback(feedback);
+    }
+
+    @PostMapping("/api/antifraud/transaction")
+    public Object addTransaction(@RequestBody TransactionDTO transaction) {
+        return antifraudService.addTransaction(transaction);
     }
 
     @PostMapping("/api/antifraud/suspicious-ip")

@@ -1,18 +1,19 @@
 package antifraud.service;
 
+import antifraud.dto.FeedbackDTO;
 import antifraud.dto.TransactionDTO;
-import antifraud.entity.BannedCard;
-import antifraud.entity.BannedIP;
-import antifraud.entity.Validity;
+import antifraud.entity.*;
+import antifraud.mapper.TransactionMapper;
 import antifraud.repository.BannedCardRepository;
 import antifraud.repository.BannedIPRepository;
+import antifraud.repository.TransactionRepository;
+import antifraud.util.LimitsUtil;
+import antifraud.util.LogUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Validated
@@ -21,47 +22,42 @@ public class AntifraudService {
     private final BannedIPRepository bannedIPRepository;
     private final BannedCardRepository bannedCardRepository;
     private final ValidateService validateService;
+    private final TransactionRepository transactionRepository;
+    private final TransactionValidateService transactionValidateService;
 
-    public AntifraudService(BannedIPRepository bannedIPRepository, BannedCardRepository bannedCardRepository, ValidateService validateService) {
+    public AntifraudService(BannedIPRepository bannedIPRepository,
+                            BannedCardRepository bannedCardRepository,
+                            ValidateService validateService,
+                            TransactionRepository transactionRepository,
+                            TransactionValidateService transactionValidateService) {
         this.bannedIPRepository = bannedIPRepository;
         this.bannedCardRepository = bannedCardRepository;
         this.validateService = validateService;
+        this.transactionRepository = transactionRepository;
+        this.transactionValidateService = transactionValidateService;
     }
 
-    public Map<String, String> checkTransaction(@Valid TransactionDTO transaction) {
+    public Map<String, String> addTransaction(@Valid TransactionDTO transaction) {
         validateService.checkIpFormat(transaction.getIp());
         validateService.checkCardNumberFormat(transaction.getNumber());
+        validateService.checkRegion(transaction.getRegion());
+        SortedMap<Validity, Set<String>> result = transactionValidateService.checkTransaction(transaction);
+        Transaction transactionEntity = TransactionMapper.toEntity(transaction);
+        transactionEntity.setResult(result.firstKey());
+        transactionRepository.save(transactionEntity);
+        return Map.of("result", result.firstKey().name(),
+                "info", String.join(", ", result.get(result.firstKey())));
+    }
 
-        Validity result;
-        List<String> reasons = new ArrayList<>();
-        if (transaction.getAmount() > 1500L) {
-            result = Validity.PROHIBITED;
-            reasons.add("amount");
-        } else if (transaction.getAmount() > 200L) {
-            result = Validity.MANUAL_PROCESSING;
-            reasons.add("amount");
-        } else {
-            result = Validity.ALLOWED;
-            reasons.add("none");
-        }
-
-        if (bannedCardRepository.existsByNumber(transaction.getNumber())) {
-            if (result != Validity.PROHIBITED) {
-                result = Validity.PROHIBITED;
-                reasons.clear();
-            }
-            reasons.add("card-number");
-        }
-
-        if (bannedIPRepository.existsByIp(transaction.getIp())) {
-            if (result != Validity.PROHIBITED) {
-                result = Validity.PROHIBITED;
-                reasons.clear();
-            }
-            reasons.add("ip");
-        }
-
-        return Map.of("result", result.name(), "info", String.join(", ", reasons));
+    public TransactionDTO addFeedback(FeedbackDTO feedback) {
+        Transaction transaction = getTransaction(feedback.getTransactionId());
+        Validity validity = validateService.checkAndParseValidity(feedback.getFeedback());
+        validateService.checkTransactionFeedbackExist(transaction);
+        validateService.checkFeedbackSameAsResult(validity, transaction.getResult());
+        transaction.setFeedback(validity);
+        transactionRepository.save(transaction);
+        LimitsUtil.updateLimits(transaction.getResult(), validity, transaction.getAmount());
+        return TransactionMapper.toDTO(transaction);
     }
 
     public BannedIP addBannedIP(@Valid BannedIP bannedIP) {
@@ -98,5 +94,26 @@ public class AntifraudService {
 
     public List<BannedCard> findAllBannedCard() {
         return (List<BannedCard>) bannedCardRepository.findAll();
+    }
+
+    private Transaction getTransaction(Long id) {
+        validateService.checkTransactionNotFound(id);
+        return transactionRepository.findById(id).get();
+    }
+
+    public List<TransactionDTO> getTransactionHistory() {
+        List<Transaction> transactions = (List<Transaction>) transactionRepository.findAllByOrderById();
+        return transactions.stream()
+                .map(TransactionMapper::toDTO)
+                .toList();
+    }
+
+    public List<TransactionDTO> getTransactionsByNumber(String number) {
+        validateService.checkCardNumberFormat(number);
+        List<Transaction> transactions = (List<Transaction>) transactionRepository.findAllByNumberOrderById(number);
+        validateService.checkTransactionsByNumberNotFound(transactions);
+        return transactions.stream()
+                .map(TransactionMapper::toDTO)
+                .toList();
     }
 }

@@ -1,15 +1,16 @@
 package antifraud.service;
 
-import antifraud.entity.Operation;
-import antifraud.entity.Role;
-import antifraud.entity.User;
+import antifraud.entity.*;
 import antifraud.repository.BannedCardRepository;
 import antifraud.repository.BannedIPRepository;
+import antifraud.repository.TransactionRepository;
 import antifraud.repository.UserRepository;
 import antifraud.util.LuhnFormula;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 public class ValidateService {
@@ -17,11 +18,16 @@ public class ValidateService {
     private final UserRepository userRepository;
     private final BannedIPRepository bannedIPRepository;
     private final BannedCardRepository bannedCardRepository;
+    private final TransactionRepository transactionRepository;
 
-    public ValidateService(UserRepository userRepository, BannedIPRepository bannedIPRepository, BannedCardRepository bannedCardRepository) {
+    public ValidateService(UserRepository userRepository,
+                           BannedIPRepository bannedIPRepository,
+                           BannedCardRepository bannedCardRepository,
+                           TransactionRepository transactionRepository) {
         this.userRepository = userRepository;
         this.bannedIPRepository = bannedIPRepository;
         this.bannedCardRepository = bannedCardRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     void checkUserExist(String username) {
@@ -52,13 +58,21 @@ public class ValidateService {
         }
     }
 
+    public Validity checkAndParseValidity(String validity) {
+        try {
+            return Validity.valueOf(validity);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Validity not found!");
+        }
+    }
+
     public void checkChangeAdmin(User user) {
         if (user.getRole() == Role.ADMINISTRATOR) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can't change Administrator!");
         }
     }
 
-    public void checkUnaccessibleRole(Role role) {
+    public void checkInaccessibleRole(Role role) {
         if (role == Role.ADMINISTRATOR) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't add Administrator role!");
         }
@@ -104,6 +118,38 @@ public class ValidateService {
     public void checkBannedCardNotFound(String number) {
         if (!bannedCardRepository.existsByNumber(number)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Card number not found!");
+        }
+    }
+
+    public Region checkRegion(String region) {
+        try {
+            return Region.valueOf(region);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Region not found!");
+        }
+    }
+
+    public void checkTransactionNotFound(Long id) {
+        if (!transactionRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found!");
+        }
+    }
+
+    public void checkTransactionFeedbackExist(Transaction transaction) {
+        if(transaction.getFeedback() != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Transaction feedback exist!");
+        }
+    }
+
+    public void checkTransactionsByNumberNotFound(List<Transaction> transactions) {
+        if (transactions.size() == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transactions not found!");
+        }
+    }
+
+    public void checkFeedbackSameAsResult(Validity feedback, Validity result) {
+        if (feedback.equals(result)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Feedback is unprocessable!");
         }
     }
 }

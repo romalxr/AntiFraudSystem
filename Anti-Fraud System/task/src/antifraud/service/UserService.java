@@ -75,7 +75,7 @@ public class UserService {
     public UserDTO changeRole(@Valid RoleDTO roleDTO) {
         User user = getUser(roleDTO.getUsername());
         Role role = validateService.checkAndParseRole(roleDTO.getRole());
-        validateService.checkUnaccessibleRole(role);
+        validateService.checkInaccessibleRole(role);
         validateService.checkAlreadyHaveRole(user, role);
         validateService.checkChangeAdmin(user);
         user.setRole(role);

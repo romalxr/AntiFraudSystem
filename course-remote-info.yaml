@@ -3,7 +3,7 @@ hyperskill_project:
   ide_files: https://stepik.org/media/attachments/lesson/657120/additional_files.json
   is_template_based: false
   use_ide: true
-update_date: "Wed, 22 Feb 2023 02:29:10 UTC"
+update_date: "Tue, 28 Feb 2023 02:07:39 UTC"
 stages:
 - id: 1161
   step: 18067
@@ -19,10 +19,10 @@ stages:
   is_completed: true
 - id: 1165
   step: 18071
-  is_completed: false
+  is_completed: true
 - id: 1166
   step: 18072
-  is_completed: false
+  is_completed: true
 topics:
   0:
   - title: "Write, compile, and run"
@@ -33,24 +33,28 @@ topics:
     theory_id: 6865
   - title: Introduction to Operating systems
     theory_id: 9704
+  - title: Command line overview
+    theory_id: 8977
+  - title: Parameters and Options
+    theory_id: 9746
   - title: Computer algorithms
     theory_id: 16547
-  - title: Immutability
-    theory_id: 7929
   - title: World Wide Web
     theory_id: 6633
   - title: HyperText Transfer Protocol
     theory_id: 6569
+  - title: Immutability
+    theory_id: 7929
+  - title: Introduction to Spring Boot
+    theory_id: 7944
+  - title: Getting started with Spring Boot
+    theory_id: 6336
   - title: The big O notation
     theory_id: 16699
   - title: "Best, average and worst cases"
     theory_id: 20084
   - title: Data structures
     theory_id: 16927
-  - title: Introduction to Spring Boot
-    theory_id: 7944
-  - title: Getting started with Spring Boot
-    theory_id: 6336
   - title: HTTP URL
     theory_id: 6740
   - title: Basic project structure
@@ -73,12 +77,12 @@ topics:
     theory_id: 3611
   - title: HTTP messages
     theory_id: 6752
+  - title: REST
+    theory_id: 7834
   - title: Introduction to Spring Web MVC
     theory_id: 13611
   - title: Using Spring MVC
     theory_id: 14409
-  - title: REST
-    theory_id: 7834
   - title: Postman
     theory_id: 8512
   - title: Introduction to Spring Data
@@ -201,10 +205,6 @@ topics:
     theory_id: 3552
   - title: Build tools
     theory_id: 4284
-  - title: Command line overview
-    theory_id: 8977
-  - title: Parameters and Options
-    theory_id: 9746
   - title: Java Archive
     theory_id: 4311
   - title: Gradle basics
@@ -215,26 +215,24 @@ topics:
     theory_id: 7917
   - title: Dependency management
     theory_id: 5076
+  - title: External resources
+    theory_id: 6216
   - title: Pseudocode
     theory_id: 15090
   - title: Pseudocode basics
     theory_id: 19510
   - title: Complex constructions in pseudocode
     theory_id: 20922
-  - title: External resources
-    theory_id: 6216
-  - title: Fixed-size array
-    theory_id: 20078
-  - title: Dynamic array
-    theory_id: 5357
   - title: Web development
     theory_id: 13931
   - title: Libraries
     theory_id: 8504
   - title: Frameworks
     theory_id: 6701
-  - title: HTML basics
-    theory_id: 6434
+  - title: Fixed-size array
+    theory_id: 20078
+  - title: Dynamic array
+    theory_id: 5357
   - title: What is a bug
     theory_id: 5504
   - title: Functional testing
@@ -243,6 +241,8 @@ topics:
     theory_id: 7545
   - title: Dependency injection
     theory_id: 20580
+  - title: HTML basics
+    theory_id: 6434
   - title: Tags and Attributes
     theory_id: 7536
   - title: HTML page structure
@@ -261,14 +261,14 @@ topics:
     theory_id: 6901
   - title: Introduction to software architecture
     theory_id: 15368
-  - title: JSON
-    theory_id: 6854
-  - title: Data and object mapping
-    theory_id: 8262
   - title: Reducing boilerplate code with Lombok
     theory_id: 13983
   - title: Design principles
     theory_id: 8956
+  - title: JSON
+    theory_id: 6854
+  - title: Data and object mapping
+    theory_id: 8262
   - title: Introduction to logging
     theory_id: 5538
   - title: Debugging techniques
@@ -309,8 +309,6 @@ topics:
     theory_id: 3557
   - title: Collections and thread-safety
     theory_id: 4984
-  - title: MVC
-    theory_id: 17197
   - title: "Hashing: overview"
     theory_id: 9831
   - title: Hash function
@@ -321,6 +319,8 @@ topics:
     theory_id: 3558
   - title: Thread-safe maps
     theory_id: 17081
+  - title: MVC
+    theory_id: 17197
   - title: Defining classes
     theory_id: 3618
   - title: Constructor
@@ -369,8 +369,6 @@ topics:
   - title: Custom User Store
     theory_id: 16191
   2:
-  - title: Introduction to JPA
-    theory_id: 17125
   - title: Entities
     theory_id: 18135
   - title: JPA relationships
@@ -389,6 +387,8 @@ topics:
     theory_id: 16662
   - title: Object-Relational Mapping (ORM)
     theory_id: 8312
+  - title: Introduction to JPA
+    theory_id: 17125
   - title: Introduction to PostgreSQL
     theory_id: 17974
   3:
